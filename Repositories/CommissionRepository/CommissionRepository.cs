@@ -1,5 +1,6 @@
 ﻿using CarSalesApp.Interfaces;
 using CarSalesApp.Model;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -19,31 +20,17 @@ namespace CarSalesApp.Repositories
 
         public async Task<IEnumerable<SalesmanCommission>> GetSalesmanCommissionReport()
         {
-            var commissions = new List<SalesmanCommission>();
-
-            using (SqlConnection conn = new SqlConnection(_connectionString))
+            using (IDbConnection conn = new SqlConnection(_connectionString))
             {
-                SqlCommand cmd = new SqlCommand("CalculateSalesmanCommission", conn)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
+                string storedProcedure = "CalculateSalesmanCommission";
 
-                await conn.OpenAsync();
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        commissions.Add(new SalesmanCommission
-                        {
-                            SalesmanId = reader.GetInt32(0),
-                            Name = reader.GetString(1),
-                            TotalCommission = reader.GetDecimal(2)
-                        });
-                    }
-                }
+                var commissions = await conn.QueryAsync<SalesmanCommission>(
+                    storedProcedure,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return commissions;
             }
-
-            return commissions;
         }
     }
 }
