@@ -52,5 +52,5 @@ The project follows a layered architecture with a clear separation of concerns:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/carsalesapp.git
-   cd carsalesapp
+   git clone https://github.com/Yagnesh5/CarSalesApp.git
+   cd CarSalesApp
